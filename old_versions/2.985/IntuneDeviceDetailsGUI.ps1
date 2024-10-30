@@ -1,38 +1,38 @@
 ﻿<#
 .Synopsis
-   Intune Device Details GUI ver 3.0 (MgGraph version)
+   Intune Device Details GUI ver 2.985 (MgGraph version)
    
 
    Author:
    Petri.Paavola@yodamiitti.fi
-   Senior Modern Management Principal
-   Microsoft MVP - Windows and Intune
+   Modern Management Principal
+   Microsoft MVP - Windows and Devices
    
-   2024-09-17
+   2024-07-19
    
    https://github.com/petripaavola/IntuneDeviceDetailsGUI
 .DESCRIPTION
    This tool visualizes Intune device and user details and
-   Applications, Configurations and Remediations Deployments.
+   Applications and Configurations Deployments.
 
    Tool includes search capability so you can just run script and find devices from
    script's built-in search.
 
    Some of this information is not shown easily or at all in Intune web console
    - Application and Configuration Deployments include information of
-     what Entra ID Group was used for assignment and if filter was applied
+     what Azure AD Group was used for assignment and if filter was applied
    - Number of affected devices and/or users is shown with deployments
    - Last signed in users are shown
    - With shared devices you can select logged in user to show Application Deployments
-   - JSON data inside Intune helps for example to build Entra ID Dynamic groups rules
+   - JSON data inside Intune helps for example to build Azure AD Dynamic groups rules
    - This tool helps to understand why some Apps or Configuration Profiles are applying to device
-     (what Entra ID group and/or filter is applied)
+     (what Azure AD group and/or filter is applied)
 
    Tip: hover with mouse on top of different values to get ToolTips.
         There is more info shown (for example DeviceName, PrimaryUser, OS/version)
 	
    Test right click menus -> You can open MEM/Intune web console for many resources:
-   Intune Device, Entra ID Device, PrimaryUser, Entra ID Groups, Applications, Filters, etc...
+   Intune Device, Azure AD Device, PrimaryUser, Azure AD Groups, Applications, Filters, etc...
    
    Script uses Powershell module Microsoft.Graph.Authentication which you can install with command
    Install-Module -Name Microsoft.Graph.Authentication -Scope CurrentUser
@@ -82,7 +82,7 @@ Param(
     [String]$id = $null
 )
 
-$ScriptVersion = "ver 3.0"
+$ScriptVersion = "ver 2.985"
 $IntuneDeviceId = $id
 $TimeOutBetweenGraphAPIRequests = 300
 
@@ -133,11 +133,9 @@ $inputXML = @"
             <RowDefinition MinHeight="105" MaxHeight="105"/>
             <RowDefinition MinHeight="150"/>
 			<RowDefinition MinHeight="3" MaxHeight="3"/>
-            <RowDefinition MinHeight="100"/>
+            <RowDefinition MinHeight="150"/>
 			<RowDefinition MinHeight="3" MaxHeight="3"/>
-            <RowDefinition MinHeight="100"/>
-			<RowDefinition MinHeight="3" MaxHeight="3"/>
-            <RowDefinition MinHeight="100"/>
+            <RowDefinition MinHeight="150"/>
             <RowDefinition Height="50" MinHeight="50" MaxHeight="50"/>
         </Grid.RowDefinitions>
         <Border x:Name="IntuneDeviceDetailsBorderTop" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="5" BorderBrush="Black" BorderThickness="1" Margin="0,0,2,2" CornerRadius="8" Background="#FFF7F7F7">
@@ -151,7 +149,7 @@ $inputXML = @"
 						<ContextMenu>
 							<MenuItem x:Name='IntuneDeviceDetails_textBox_DeviceName_Menu_Copy' Header='Copy'/>
 							<MenuItem x:Name='IntuneDeviceDetails_textBox_DeviceName_Menu_OpenDeviceInBrowser' Header='Open Intune Device in browser'/>
-							<MenuItem x:Name='IntuneDeviceDetails_textBox_DeviceName_Menu_OpenAzureADDeviceInBrowser' Header='Open Entra ID Device in browser'/>
+							<MenuItem x:Name='IntuneDeviceDetails_textBox_DeviceName_Menu_OpenAzureADDeviceInBrowser' Header='Open Azure AD Device in browser'/>
 							<MenuItem x:Name='IntuneDeviceDetails_textBox_DeviceName_Menu_OpenAutopilotDeviceInBrowser' Header='Open Autopilot devices in browser and paste device serial to search'/>
 						</ContextMenu>
 					</TextBox.ContextMenu>
@@ -161,7 +159,7 @@ $inputXML = @"
 							<Border BorderBrush="Silver" BorderThickness="0,1,0,0" Margin="0,2" />
 							<TextBlock FontSize="14" x:Name='IntuneDeviceDetails_textBox_DeviceName_ToolTip_DeviceProperties' FontFamily="Consolas"></TextBlock>
 							<TextBlock/>
-							<TextBlock FontSize="14" FontWeight="Bold">EntraID device extensionAttributes</TextBlock>
+							<TextBlock FontSize="14" FontWeight="Bold">AzureAD device extensionAttributes</TextBlock>
 							<Border BorderBrush="Silver" BorderThickness="0,1,0,0" Margin="0,0" />
 							<TextBlock FontSize="14" x:Name='IntuneDeviceDetails_textBox_DeviceName_ToolTip_extensionAttributes' FontFamily="Consolas"></TextBlock>
 						</StackPanel>
@@ -377,9 +375,9 @@ $inputXML = @"
 								<ListView.ContextMenu>
 									<ContextMenu IsTextSearchEnabled="True">
 										<MenuItem x:Name = 'ListView_GridTabItem_Device_GroupMembershipsTAB_Menu_Copy_DynamicRules' Header = 'Copy Dynamic Group rules to clipboard'/>
-										<MenuItem x:Name = 'ListView_GridTabItem_Device_GroupMembershipsTAB_Menu_Copy_JSON' Header = 'Copy Entra ID Group JSON to clipboard'/>
+										<MenuItem x:Name = 'ListView_GridTabItem_Device_GroupMembershipsTAB_Menu_Copy_JSON' Header = 'Copy Azure AD Group JSON to clipboard'/>
 										<Separator />
-										<MenuItem x:Name = 'ListView_GridTabItem_Device_GroupMembershipsTAB_Menu_Open_Group_In_Browser' Header = 'Open Entra ID Group in browser'/>
+										<MenuItem x:Name = 'ListView_GridTabItem_Device_GroupMembershipsTAB_Menu_Open_Group_In_Browser' Header = 'Open Azure AD Group in browser'/>
 									</ContextMenu>
 								</ListView.ContextMenu>
 								<ListView.View>
@@ -490,9 +488,9 @@ $inputXML = @"
 								<ListView.ContextMenu>
 									<ContextMenu IsTextSearchEnabled="True">
 										<MenuItem x:Name = 'ListView_GridTabItem_PrimaryUser_GroupMembershipsTAB_Menu_Copy_DynamicRules' Header = 'Copy Dynamic Group rules to clipboard'/>
-										<MenuItem x:Name = 'ListView_GridTabItem_PrimaryUser_GroupMembershipsTAB_Menu_Copy_JSON' Header = 'Copy Entra ID Group JSON to clipboard'/>
+										<MenuItem x:Name = 'ListView_GridTabItem_PrimaryUser_GroupMembershipsTAB_Menu_Copy_JSON' Header = 'Copy Azure AD Group JSON to clipboard'/>
 										<Separator />
-										<MenuItem x:Name = 'ListView_GridTabItem_PrimaryUser_GroupMembershipsTAB_Menu_Open_Group_In_Browser' Header = 'Open Entra ID Group in browser'/>
+										<MenuItem x:Name = 'ListView_GridTabItem_PrimaryUser_GroupMembershipsTAB_Menu_Open_Group_In_Browser' Header = 'Open Azure AD Group in browser'/>
 									</ContextMenu>
 								</ListView.ContextMenu>
 								<ListView.View>
@@ -629,9 +627,9 @@ $inputXML = @"
 								<ListView.ContextMenu>
 									<ContextMenu IsTextSearchEnabled="True">
 										<MenuItem x:Name = 'ListView_GridTabItem_LatestCheckedInUser_GroupMembershipsTAB_Menu_Copy_DynamicRules' Header = 'Copy Dynamic Group rules to clipboard'/>
-										<MenuItem x:Name = 'ListView_GridTabItem_LatestCheckedInUser_GroupMembershipsTAB_Menu_Copy_JSON' Header = 'Copy Entra ID Group JSON to clipboard'/>
+										<MenuItem x:Name = 'ListView_GridTabItem_LatestCheckedInUser_GroupMembershipsTAB_Menu_Copy_JSON' Header = 'Copy Azure AD Group JSON to clipboard'/>
 										<Separator />
-										<MenuItem x:Name = 'ListView_GridTabItem_LatestCheckedInUser_GroupMembershipsTAB_Menu_Open_Group_In_Browser' Header = 'Open Entra ID Group in browser'/>
+										<MenuItem x:Name = 'ListView_GridTabItem_LatestCheckedInUser_GroupMembershipsTAB_Menu_Open_Group_In_Browser' Header = 'Open Azure AD Group in browser'/>
 									</ContextMenu>
 								</ListView.ContextMenu>
 								<ListView.View>
@@ -747,8 +745,8 @@ $inputXML = @"
 				</TabControl>
             </Grid>
         </Border>
-        <GridSplitter Grid.Row="2" Grid.Column="3" Grid.RowSpan="7" Width="5" HorizontalAlignment="Stretch" />
-		<Border x:Name="IntuneDeviceDetailsBorderXAML" Grid.Row="2" Grid.Column="4" Grid.RowSpan="7" BorderBrush="Black" BorderThickness="1" Margin="0,0,2,2" CornerRadius="8" Background="#FFF7F7F7">
+        <GridSplitter Grid.Row="2" Grid.Column="3" Grid.RowSpan="5" Width="5" HorizontalAlignment="Stretch" />
+		<Border x:Name="IntuneDeviceDetailsBorderXAML" Grid.Row="2" Grid.Column="4" Grid.RowSpan="5" BorderBrush="Black" BorderThickness="1" Margin="0,0,2,2" CornerRadius="8" Background="#FFF7F7F7">
             <Grid>
 				<TabControl x:Name="tabControlDetailsXAML" Margin="5,5,0,0" Background="#FFE5EEFF" Foreground="White">
 					<TabControl.Resources>
@@ -828,7 +826,7 @@ $inputXML = @"
 					</TabItem>
 					<TabItem x:Name="AzureADDeviceJSON" Background="#FFE5EEFF">
 						<TabItem.Header>
-							<TextBlock Text="Entra ID Device JSON" Style="{StaticResource HeaderTextBlockStyle}"/>
+							<TextBlock Text="Azure AD Device JSON" Style="{StaticResource HeaderTextBlockStyle}"/>
 						</TabItem.Header>
 						<Grid x:Name="GridAzureADDeviceJSONTAB">
 							<Border x:Name="BorderGridAzureADDeviceJSONTAB" BorderBrush="Black" BorderThickness="1" Margin="0,0,2,2" Background="#FFF7F7F7" CornerRadius="8">
@@ -900,7 +898,7 @@ $inputXML = @"
 					</TabItem>
 					<TabItem x:Name="AzureADGroupJSON" Background="#FFE5EEFF">
 						<TabItem.Header>
-							<TextBlock Text="Selected Entra ID Group JSON" Style="{StaticResource HeaderTextBlockStyle}"/>
+							<TextBlock Text="Selected Azure AD Group JSON" Style="{StaticResource HeaderTextBlockStyle}"/>
 						</TabItem.Header>
 						<Grid x:Name="AzureADGroupJSONTAB">
 							<Border x:Name="BorderGridAzureADGroupJSONTAB" BorderBrush="Black" BorderThickness="1" Margin="0,0,2,2" Background="#FFF7F7F7" CornerRadius="8">
@@ -1409,264 +1407,7 @@ $inputXML = @"
                 </ListView>
             </Grid>
         </Border>
-		<GridSplitter Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="3" Height="5" HorizontalAlignment="Stretch" />
-		<Border x:Name="IntuneDeviceDetailsBorderScripts" Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="3" BorderBrush="Black" BorderThickness="1" Margin="0,0,2,2" CornerRadius="8" Background="#FFF7F7F7">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="25" MinHeight="25"/>
-                    <RowDefinition Height="*" MinHeight="150"/>
-                </Grid.RowDefinitions>
-                <Label x:Name="IntuneDeviceDetails_ScriptsAssignments_label" Grid.Row="0" Content="Remediation scripts Assignments" Height="27" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Top" FontWeight="Bold"/>
-                <ListView x:Name="listView_ScriptsAssignments" Grid.Row="1" Margin="5,5,5,5" IsManipulationEnabled="True">
-                    <!-- This makes our colored cells to fill whole cell background, not just text background -->
-                    <ListView.ItemContainerStyle>
-                        <Style TargetType="ListViewItem">
-                            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                        </Style>
-                    </ListView.ItemContainerStyle>
-					<ListView.ContextMenu>
-						<ContextMenu IsTextSearchEnabled="True">
-							<!-- <MenuItem x:Name = 'listView_ScriptsAssignments_Menu_Copy_ScriptBasicInfo' Header = 'Copy Script basic info to clipboard'/> -->
-							<!-- <MenuItem x:Name = 'listView_ScriptsAssignments_Menu_Copy_JSON' Header = 'Copy Script basic information JSON to clipboard'/> -->
-							<Separator />
-							<!-- <MenuItem x:Name = 'listView_ScriptsAssignments_Menu_Open_Script_In_Browser' Header = 'Open Script in browser'/> -->
-							<!-- <MenuItem x:Name = 'listView_ScriptsAssignments_Menu_Open_ScriptAssignmentBroup_In_Browser' Header = 'Open Assignment Group in browser'/> -->
-							<!-- <MenuItem x:Name = 'listView_ScriptsAssignments_Menu_Open_ScriptAssignmentFilter_In_Browser' Header = 'Open Filter in browser'/> -->
-						</ContextMenu>
-					</ListView.ContextMenu>
-                    <ListView.View>
-                        <GridView>
-                            <GridViewColumn Width="70">
-								<GridViewColumn.Header>
-									<GridViewColumnHeader FontWeight="Bold">context</GridViewColumnHeader>
-								</GridViewColumn.Header>
-                                <GridViewColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="-6,0,-6,0">
-                                            <Grid.Style>
-                                                <Style TargetType="{x:Type Grid}">
-                                                    <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding context}" Value="_unknown">
-                                                            <Setter Property="Background" Value="yellow"/>
-                                                        </DataTrigger>
-                                                        <DataTrigger Binding="{Binding context}" Value="_Device/User">
-                                                            <Setter Property="Background" Value="yellow"/>
-                                                        </DataTrigger>
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </Grid.Style>
-                                            <TextBlock HorizontalAlignment="Center" Text="{Binding context}" ToolTip="{Binding Path=contextToolTip}" Padding="0" Margin="0" />
-                                        </Grid>
-                                    </DataTemplate>
-                                </GridViewColumn.CellTemplate>
-                            </GridViewColumn>
-							<GridViewColumn Width="90">
-                                <GridViewColumn.Header>
-									<GridViewColumnHeader FontWeight="Bold">Script type</GridViewColumnHeader>
-								</GridViewColumn.Header>
-								<GridViewColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <TextBlock Text="{Binding 'scriptType'}" />
-                                    </DataTemplate>
-                                </GridViewColumn.CellTemplate>
-                            </GridViewColumn>
-                            <GridViewColumn Width="300">
-								<GridViewColumn.Header>
-									<GridViewColumnHeader FontWeight="Bold">Script Name</GridViewColumnHeader>
-								</GridViewColumn.Header>
-                                <GridViewColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <TextBlock FontWeight="Bold" Text="{Binding displayName}" ToolTip="{Binding Path=displayNameToolTip}">
-                                        </TextBlock>
-                                    </DataTemplate>
-                                </GridViewColumn.CellTemplate>
-                            </GridViewColumn>
-							<GridViewColumn Width="95">
-								<GridViewColumn.Header>
-									<GridViewColumnHeader FontWeight="Bold">Detection status</GridViewColumnHeader>
-								</GridViewColumn.Header>
-                                <GridViewColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="-6,0,-6,0">
-                                            <Grid.Style>
-                                                <Style TargetType="{x:Type Grid}">
-                                                    <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding detectionStatus}" Value="Without issues">
-                                                            <Setter Property="Background" Value="#7FFF00"/>
-                                                        </DataTrigger>
-														<DataTrigger Binding="{Binding detectionStatus}" Value="With issues">
-                                                            <Setter Property="Background" Value="#FFA500"/>
-                                                        </DataTrigger>
-														<DataTrigger Binding="{Binding detectionStatus}" Value="Error">
-                                                            <Setter Property="Background" Value="#FF6347"/>
-                                                        </DataTrigger>
-														<DataTrigger Binding="{Binding detectionStatus}" Value="Not applicable">
-                                                            <Setter Property="Background" Value="yellow"/>
-                                                        </DataTrigger>
-                                                        <!-- <DataTrigger Binding="{Binding detectionStatus}" Value="Unknown status">
-                                                        <Setter Property="Background" Value="#FF6347"/>
-														</DataTrigger> -->
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </Grid.Style>
-                                            <TextBlock HorizontalAlignment="Center" Text="{Binding 'detectionStatus'}" ToolTip="{Binding Path=DetectionStatusToolTip}" ToolTipService.ShowDuration="500000" Padding="0" Margin="0" />
-                                        </Grid>
-                                    </DataTemplate>
-                                </GridViewColumn.CellTemplate>
-                            </GridViewColumn>
-							<GridViewColumn Width="100">
-								<GridViewColumn.Header>
-									<GridViewColumnHeader FontWeight="Bold">Remediation status</GridViewColumnHeader>
-								</GridViewColumn.Header>
-                                <GridViewColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="-6,0,-6,0">
-                                            <Grid.Style>
-                                                <Style TargetType="{x:Type Grid}">
-                                                    <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding remediationStatus}" Value="Issue fixed">
-                                                            <Setter Property="Background" Value="#7FFF00"/>
-                                                        </DataTrigger>
-														<DataTrigger Binding="{Binding remediationStatus}" Value="With issues">
-                                                            <Setter Property="Background" Value="#FF6347"/>
-                                                        </DataTrigger>
-														<DataTrigger Binding="{Binding remediationStatus}" Value="Error">
-                                                            <Setter Property="Background" Value="#FF6347"/>
-                                                        </DataTrigger>
-														<DataTrigger Binding="{Binding remediationStatus}" Value="Unknown status">
-                                                            <Setter Property="Background" Value="yellow"/>
-                                                        </DataTrigger>
-                                                        <!-- <DataTrigger Binding="{Binding remediationStatus}" Value="Unknown status">
-                                                        <Setter Property="Background" Value="#FF6347"/>
-														</DataTrigger> -->
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </Grid.Style>
-                                            <TextBlock HorizontalAlignment="Center" Text="{Binding 'remediationStatus'}" ToolTip="{Binding Path=RemediationStatusToolTip}" ToolTipService.ShowDuration="500000" Padding="0" Margin="0" />
-                                        </Grid>
-                                    </DataTemplate>
-                                </GridViewColumn.CellTemplate>
-                            </GridViewColumn>
-							<GridViewColumn Width="190">
-								<GridViewColumn.Header>
-									<GridViewColumnHeader FontWeight="Bold">userPrincipalName</GridViewColumnHeader>
-								</GridViewColumn.Header>
-                                <GridViewColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <TextBlock FontWeight="Bold" Text="{Binding userPrincipalName}"/>
-                                    </DataTemplate>
-                                </GridViewColumn.CellTemplate>
-                            </GridViewColumn>
-							<GridViewColumn Width="90">
-								<GridViewColumn.Header>
-									<GridViewColumnHeader FontWeight="Bold">Status updated</GridViewColumnHeader>
-								</GridViewColumn.Header>
-                                <GridViewColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <TextBlock FontWeight="Bold" Text="{Binding statusUpdateTime}" ToolTip="{Binding Path=statusUpdateTimeToolTip}" ToolTipService.ShowDuration="500000"/>
-                                    </DataTemplate>
-                                </GridViewColumn.CellTemplate>
-                            </GridViewColumn>
-							<GridViewColumn Width="70">
-                                <GridViewColumn.Header>
-									<GridViewColumnHeader FontWeight="Bold">GroupType</GridViewColumnHeader>
-								</GridViewColumn.Header>
-								<GridViewColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <TextBlock Text="{Binding YodamiittiCustomMembershipType}">
-                                        </TextBlock>
-                                    </DataTemplate>
-                                </GridViewColumn.CellTemplate>
-                            </GridViewColumn>							
-							<GridViewColumn Width="250">
-								<GridViewColumn.Header>
-									<GridViewColumnHeader FontWeight="Bold">assignmentGroup</GridViewColumnHeader>
-								</GridViewColumn.Header>
-								<GridViewColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="-6,0,-6,0">
-                                            <Grid.Style>
-                                                <Style TargetType="{x:Type Grid}">
-                                                    <Style.Triggers>
-														<DataTrigger Binding="{Binding assignmentGroup}" Value="Script does not have any assignments!">
-															<Setter Property="Background" Value="#FF6347"/>
-														</DataTrigger>
-														<DataTrigger Binding="{Binding state}" Value="Not applicable">
-                                                            <Setter Property="Background" Value="yellow"/>
-                                                        </DataTrigger>
-														<DataTrigger Binding="{Binding IncludeExclude}" Value="Excluded">
-                                                            <Setter Property="Background" Value="yellow"/>
-                                                        </DataTrigger>
-														<DataTrigger Binding="{Binding assignmentGroup}" Value="unknown (possible nested group or removed assignment)">
-                                                            <Setter Property="Background" Value="yellow"/>
-                                                        </DataTrigger>
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </Grid.Style>
-                                            <TextBlock HorizontalAlignment="Left" Text="{Binding assignmentGroup}" ToolTip="{Binding Path=AssignmentGroupToolTip}" Padding="0" Margin="0" />
-                                        </Grid>
-                                    </DataTemplate>
-                                </GridViewColumn.CellTemplate>
-							</GridViewColumn>
-							<GridViewColumn Width="105">
-                                <GridViewColumn.Header>
-									<GridViewColumnHeader FontWeight="Bold">Group Members</GridViewColumnHeader>
-								</GridViewColumn.Header>
-								<GridViewColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <TextBlock HorizontalAlignment="Right" Text="{Binding YodamiittiCustomGroupMembers}">
-                                        </TextBlock>
-                                    </DataTemplate>
-                                </GridViewColumn.CellTemplate>
-                            </GridViewColumn>							
-							<GridViewColumn Width="250">
-								<GridViewColumn.Header>
-									<GridViewColumnHeader FontWeight="Bold">Filter</GridViewColumnHeader>
-								</GridViewColumn.Header>
-								<GridViewColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="-6,0,-6,0">
-											<Grid.Style>
-                                                <Style TargetType="{x:Type Grid}">
-                                                    <Style.Triggers>
-														<DataTrigger Binding="{Binding state}" Value="Not applicable">
-                                                            <Setter Property="Background" Value="yellow"/>
-                                                        </DataTrigger>
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </Grid.Style>
-											<TextBlock HorizontalAlignment="Left" Text="{Binding filter}" ToolTip="{Binding Path=filterToolTip}" Padding="0" Margin="0" />
-                                        </Grid>
-                                    </DataTemplate>
-                                </GridViewColumn.CellTemplate>
-							</GridViewColumn>
-							<GridViewColumn Width="80">
-                                <GridViewColumn.Header>
-									<GridViewColumnHeader FontWeight="Bold">FilterMode</GridViewColumnHeader>
-								</GridViewColumn.Header>
-								<GridViewColumn.CellTemplate>
-                                    <DataTemplate>
-										<Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="-6,0,-6,0">
-											<Grid.Style>
-                                                <Style TargetType="{x:Type Grid}">
-                                                    <Style.Triggers>
-														<DataTrigger Binding="{Binding state}" Value="Not applicable">
-                                                            <Setter Property="Background" Value="yellow"/>
-                                                        </DataTrigger>
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </Grid.Style>
-											<TextBlock HorizontalAlignment="Left" Text="{Binding filterMode}" Padding="0" Margin="0" />
-                                        </Grid>
-                                    </DataTemplate>
-                                </GridViewColumn.CellTemplate>
-                            </GridViewColumn>							
-                        </GridView>
-                    </ListView.View>
-                </ListView>
-            </Grid>
-        </Border>
-        <Border x:Name="IntuneDeviceDetailsBorderBottom" Grid.Row="10" Grid.Column="0" Grid.ColumnSpan="5" BorderBrush="Black" BorderThickness="1" Margin="0,0,2,2" CornerRadius="8" Background="#FFF7F7F7">
+        <Border x:Name="IntuneDeviceDetailsBorderBottom" Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="5" BorderBrush="Black" BorderThickness="1" Margin="0,0,2,2" CornerRadius="8" Background="#FFF7F7F7">
             <Grid x:Name="IntuneDeviceDetailsGridBottom">
 				<TextBox x:Name="AboutTAB_textBox_author" HorizontalAlignment="Right" Height="26" Margin="0,2,105,0" TextWrapping="Wrap" Text="Author: Petri.Paavola@yodamiitti.fi - Microsoft MVP" VerticalAlignment="Top" Width="360" FontSize="14" IsReadOnly="True" BorderThickness="0,0,0,0" IsReadOnlyCaretVisible="True" Background="Transparent" Focusable="False">
 					<MenuItem.ToolTip>
@@ -2078,7 +1819,7 @@ function Get-CheckedInUsersGroupMemberships {
 
 					$Script:LatestCheckedInUserGroupsMemberOf = Add-AzureADGroupGroupTypeExtraProperties $Script:LatestCheckedInUserGroupsMemberOf
 					
-					Write-Verbose "Add latest checkedin user's Entra ID groups devices and users member count custom properties"
+					Write-Verbose "Add latest checkedin user's AzureAD groups devices and users member count custom properties"
 					$Script:LatestCheckedInUserGroupsMemberOf = Add-AzureADGroupDevicesAndUserMemberCountExtraProperties $Script:LatestCheckedInUserGroupsMemberOf
 
 					[Array]$script:LatestCheckedInUserGroupMembershipsObservableCollection = [Array]$Script:LatestCheckedInUserGroupsMemberOf | Sort-Object -Property displayName
@@ -2093,7 +1834,7 @@ function Get-CheckedInUsersGroupMemberships {
 					$WPFListView_GridTabItem_LatestCheckedInUser_GroupMembershipsTAB_Menu_Copy_JSON.isEnabled = $True
 					$WPFListView_GridTabItem_LatestCheckedInUser_GroupMembershipsTAB_Menu_Open_Group_In_Browser.isEnabled = $True
 
-					# Set ToolTip to TabItem Header showing all Entra ID Groups
+					# Set ToolTip to TabItem Header showing all Azure AD Groups
 					$LatestCheckedInUserGroupsMemberOfToolTip = [array]$null
 					$Script:LatestCheckedInUserGroupsMemberOf | Sort-Object -Property displayName | Foreach { $LatestCheckedInUserGroupsMemberOfToolTip += "$($_.displayName)`n" }
 					$WPFTextBlock_TabItem_LatestCheckedInUser_GroupMembershipsTAB_Header_ToolTip.Text = $LatestCheckedInUserGroupsMemberOfToolTip
@@ -2244,7 +1985,7 @@ function Get-MobileAppIntentsForSpecifiedUser {
 
 	# Get all applications targeted to specific user AND device
 	# if there is no Primary User then we get only device targeted applications
-	# We will get all device AND user targeted apps. We will need to figure out which apps came from which Entra ID Group targeting
+	# We will get all device AND user targeted apps. We will need to figure out which apps came from which AzureAD Group targeting
 
 	# Intune original request
 	#$url = "https://graph.microsoft.com/beta/users('$($Script:IntuneManagedDevice.userId)')/mobileAppIntentAndStates('$IntuneDeviceId')"
@@ -2355,7 +2096,7 @@ function Get-MobileAppIntentsForSpecifiedUser {
 			
 			if (($Assignment.target.'@odata.type' -ne '#microsoft.graph.allLicensedUsersAssignmentTarget') -and ($Assignment.target.'@odata.type' -ne '#microsoft.graph.allDevicesAssignmentTarget')) {
 
-				# Group based assignment. We need to get Entra ID Group Name
+				# Group based assignment. We need to get AzureAD Group Name
 				# #microsoft.graph.groupAssignmentTarget
 
 				# Test if device is member of this group
@@ -2617,86 +2358,6 @@ function Get-MobileAppIntentsForSpecifiedUser {
 
 	# If we got here then we should have at least 1 App Intent and State
 	return $mobileAppIntentAndStatesMobileAppList.Count
-}
-
-
-function Download-RemediationScriptsAssignment {
-	try {
-		# Remediation scripts Graph API call does NOT support searching by lastModifiedDateTime
-		# So our only option is to download all remediations every time report is created ??? :(
-		#
-		# Maybe use local cache like 5-15 minutes and then update?
-
-		Write-Verbose "Download Intune all Remediation scripts with assignment information expanded (included)"
-
-		$url = 'https://graph.microsoft.com/beta/deviceManagement/deviceHealthScripts?$expand=assignments&select=id,displayName,description,createdDateTime,lastModifiedDateTime,runAsAccount,deviceHealthScriptType,assignments'
-		
-		$AllRemediationScriptsAssignments = Invoke-MSGraphGetRequestWithMSGraphAllPages $url
-
-		Write-Verbose "Found $($AllRemediationScriptsAssignments.Count) Remediation scripts (with assignments information)"
-
-		if($AllRemediationScriptsAssignments) {
-			# Save to local cache
-			# Use -Depth 6 to get all information (default 3 should be enough in this case)
-			$jsonCacheFilePath = "$PSScriptRoot\cache\$TenantId\RemediationScriptsAssignments.json"
-			$AllRemediationScriptsAssignments | ConvertTo-Json -Depth 6 | Out-File "$jsonCacheFilePath" -Force
-			
-			# Load Configuration information from cached file always
-			$AllRemediationScriptsAssignments = Get-Content "$jsonCacheFilePath" | ConvertFrom-Json
-			
-			return $AllRemediationScriptsAssignments
-		} else {
-			Write-Verbose "Did not find any Intune Remediation script (with assignments)!"
-			
-			return $null
-		}
-
-    } catch {
-        Write-Error "$($_.Exception.GetType().FullName)"
-        Write-Error "$($_.Exception.Message)"
-        Write-Error "Error trying to download Intune Remediation scripts with assignments"
-		return $null
-    }
-}
-
-
-function Download-PowershellScriptsAssignment {
-	try {
-		# PowerShell (platform) scripts Graph API call does NOT support searching by lastModifiedDateTime
-		# So our only option is to download all remediations every time report is created ??? :(
-		#
-		# Maybe use local cache like 5-15 minutes and then update?
-
-		Write-Verbose "Download Intune Poweshell scripts with assignment information expanded (included)"
-
-		$url = 'https://graph.microsoft.com/beta/deviceManagement/deviceManagementScripts?`$expand=assignments'
-		
-		$AllPowershellScriptsAssignments = Invoke-MSGraphGetRequestWithMSGraphAllPages $url
-
-		Write-Verbose "Found $($AllPowershellScriptsAssignments.Count) PowerShell scripts (with assignments information)"
-
-		if($AllPowershellScriptsAssignments) {
-			# Save to local cache
-			# Use -Depth 6 to get all information (default 3 should be enough in this case)
-			$jsonCacheFilePath = "$PSScriptRoot\cache\$TenantId\PowerShellScriptsAssignments.json"
-			$AllPowershellScriptsAssignments | ConvertTo-Json -Depth 4 | Out-File "$jsonCacheFilePath" -Force
-			
-			# Load Configuration information from cached file always
-			$AllPowershellScriptsAssignments = Get-Content "$jsonCacheFilePath" | ConvertFrom-Json
-			
-			return $AllPowershellScriptsAssignments
-		} else {
-			Write-Verbose "Did not find any Intune PowerShell script (with assignments)!"
-			
-			return $null
-		}
-
-    } catch {
-        Write-Error "$($_.Exception.GetType().FullName)"
-        Write-Error "$($_.Exception.Message)"
-        Write-Error "Error trying to download Intune PowerShell scripts with assignments"
-		return $null
-    }
 }
 
 
@@ -3015,10 +2676,10 @@ function Add-AzureADGroupGroupTypeExtraProperties {
 		}
 
 
-		# Check if group is directoryRole which is not actual Entra ID Group
+		# Check if group is directoryRole which is not actual AzureAD Group
 		if($group.'@odata.type' -eq '#microsoft.graph.directoryRole') {
 			# Group is NOT security group at all
-			# DirectoryRoles are not Entra ID groups
+			# DirectoryRoles are not Azure AD groups
 			$group | Add-Member -MemberType noteProperty -Name YodamiittiCustomGroupType -Value 'DirectoryRole'
 		}
 
@@ -3045,7 +2706,7 @@ function Add-AzureADGroupDevicesAndUserMemberCountExtraProperties {
 		$AzureADGroups
 	)
 
-	Write-Verbose "Getting Entra ID groups membercount for $($AzureADGroups.Count) groups"
+	Write-Verbose "Getting AzureAD groups membercount for $($AzureADGroups.Count) groups"
 
 	for ($i=0; $i -lt $AzureADGroups.count; $i+=20){
 
@@ -3062,7 +2723,7 @@ function Add-AzureADGroupDevicesAndUserMemberCountExtraProperties {
 		for ($a=$i; (($a -lt $i+20) -and ($a -lt $AzureADGroups.count)); $a+=1) {
 
 			if(($AzureADGroups[$a]).'@odata.type' -eq '#microsoft.graph.directoryRole') {
-				# Azure DirectoryRole is not Entra ID Group
+				# Azure DirectoryRole is not AzureAD Group
 				$GraphAPIBatchEntry_DevicesCount = @{
 					id = ($a+1).ToString()
 					"method" = "GET"
@@ -3070,7 +2731,7 @@ function Add-AzureADGroupDevicesAndUserMemberCountExtraProperties {
 				}
 
 			} else {
-				# We should have Entra ID Group
+				# We should have AzureAD Group
 				$GraphAPIBatchEntry_DevicesCount = @{
 					id = ($a+1).ToString()
 					"method" = "GET"
@@ -3082,14 +2743,14 @@ function Add-AzureADGroupDevicesAndUserMemberCountExtraProperties {
 			$requests_devices_count.requests += $GraphAPIBatchEntry_DevicesCount
 
 			if(($AzureADGroups[$a]).'@odata.type' -eq '#microsoft.graph.directoryRole') {
-				# Azure DirectoryRole is not Entra ID Group
+				# Azure DirectoryRole is not AzureAD Group
 				$GraphAPIBatchEntry_UsersCount = @{
 					id = ($a+1).ToString()
 					"method" = "GET"
 					"url" = "/directoryRoles/$(($AzureADGroups[$a]).id)"
 				}
 			} else {
-				# We should have Entra ID Group
+				# We should have AzureAD Group
 				$GraphAPIBatchEntry_UsersCount = @{
 					id = ($a+1).ToString()
 					"method" = "GET"
@@ -3118,7 +2779,7 @@ function Add-AzureADGroupDevicesAndUserMemberCountExtraProperties {
 			#Write-Host "Success"
 		} else {
 			# Invoke-MGGraphRequest failed
-			Write-Error "Error getting Entra ID groups devices count"
+			Write-Error "Error getting AzureAD groups devices count"
 			return 1
 		}
 		
@@ -3132,17 +2793,17 @@ function Add-AzureADGroupDevicesAndUserMemberCountExtraProperties {
 				
 				if(($AzureADGroups[$GroupArrayIndex]).'@odata.type' -eq '#microsoft.graph.directoryRole') {
 					# DEBUG
-					#Write-Verbose "Entra ID directoryRole (arrayIndex=$GroupArrayIndex) $($AzureADGroups[$GroupArrayIndex].displayName)"
+					#Write-Verbose "AzureAD directoryRole (arrayIndex=$GroupArrayIndex) $($AzureADGroups[$GroupArrayIndex].displayName)"
 
 					$AzureADGroups[$GroupArrayIndex] | Add-Member -MemberType noteProperty -Name YodamiittiCustomGroupMembersCountDevices -Value 'N/A'
 				} else {
 					# DEBUG
-					#Write-Verbose "Entra ID group (arrayIndex=$GroupArrayIndex) $($AzureADGroups[$GroupArrayIndex].displayName) adding devices count property: $($response.body)"
+					#Write-Verbose "AzureAD group (arrayIndex=$GroupArrayIndex) $($AzureADGroups[$GroupArrayIndex].displayName) adding devices count property: $($response.body)"
 					
 					$AzureADGroups[$GroupArrayIndex] | Add-Member -MemberType noteProperty -Name YodamiittiCustomGroupMembersCountDevices -Value $response.body					
 				}
 			} else {
-				Write-Error "Error getting devices count for Entra ID group $($AzureADGroups[$GroupArrayIndex].displayName)"
+				Write-Error "Error getting devices count for AzureAD group $($AzureADGroups[$GroupArrayIndex].displayName)"
 				Write-Error "$($response | ConvertTo-Json)"
 			}
 		}
@@ -3158,7 +2819,7 @@ function Add-AzureADGroupDevicesAndUserMemberCountExtraProperties {
 			#Write-Host "Success"
 		} else {
 			# Invoke-MGGraphRequest failed
-			Write-Error "Error getting Entra ID groups users count"
+			Write-Error "Error getting AzureAD groups users count"
 			return 1
 		}
 		
@@ -3571,13 +3232,13 @@ function Search-IntuneDevices {
 			# Another expandable collection would be $Expand=registeredDevices
 			#$url = "https://graph.microsoft.com/beta/users?`$filter=userPrincipalName%20eq%20'$SearchString'&`$select=id,mail,userPrincipalName&`$Expand=ownedDevices"
 			
-			Write-Verbose "Get Entra ID User information with url: $url"
+			Write-Verbose "Get Azure ADUser information with url: $url"
 
 			$AzureADUser = Invoke-MSGraphGetRequestWithMSGraphAllPages $url
 
 			if($AzureADUser.id) {
 				if($AzureADUser -is [array]) {
-					Write-Verbose "Email search resulted multiple Entra ID Users so can't search devices where users has logged-on!"
+					Write-Verbose "Email search resulted multiple Azure AD Users so can't search devices where users has logged-on!"
 				} else {
 					# Found 1 user
 					
@@ -3994,14 +3655,6 @@ function Get-DeviceInformation {
                             $WindowsSupportEndsInDays = New-TimeSpan $CurrentDate 2025-11-11 | Select-Object -ExpandProperty Days
                         }
                     }
-			'10.0.26100.*' {   $Version = '11 24H2'
-                        if(($operatingSystemEdition -eq 'Ent') -or ($operatingSystemEdition -eq 'Edu')) {
-                            $WindowsSupportEndsInDays = New-TimeSpan $CurrentDate 2027-11-10 | Select-Object -ExpandProperty Days
-                        }
-                        if(($operatingSystemEdition -eq 'Home') -or ($operatingSystemEdition -like '*Pro*') -or ($operatingSystemEdition -like '*SE*')) {
-                            $WindowsSupportEndsInDays = New-TimeSpan $CurrentDate 2026-11-11 | Select-Object -ExpandProperty Days
-                        }
-                    }
             Default {
                         $Version = $Script:IntuneManagedDevice.operatingSystem
                     }
@@ -4306,7 +3959,7 @@ function Get-DeviceInformation {
 
 				$Script:PrimaryUserGroupsMemberOf = Add-AzureADGroupGroupTypeExtraProperties $Script:PrimaryUserGroupsMemberOf
 				
-				Write-Verbose "Add Primary User's Entra ID groups devices and users member count custom properties"
+				Write-Verbose "Add Primary User's AzureAD groups devices and users member count custom properties"
 				$Script:PrimaryUserGroupsMemberOf = Add-AzureADGroupDevicesAndUserMemberCountExtraProperties $Script:PrimaryUserGroupsMemberOf
 
 
@@ -4328,7 +3981,7 @@ function Get-DeviceInformation {
 				$WPFListView_GridTabItem_PrimaryUser_GroupMembershipsTAB_Menu_Open_Group_In_Browser.isEnabled = $True
   
 
-				# Set ToolTip to TabItem Header showing all Entra ID Groups
+				# Set ToolTip to TabItem Header showing all Azure AD Groups
 				$PrimaryUserGroupsMemberOfToolTip = [array]$null
 				$Script:PrimaryUserGroupsMemberOf | Sort-Object -Property displayName | Foreach { $PrimaryUserGroupsMemberOfToolTip += "$($_.displayName)`n" }
 				$WPFTextBlock_TabItem_User_GroupMembershipsTAB_Header_ToolTip.Text = $PrimaryUserGroupsMemberOfToolTip
@@ -4356,13 +4009,13 @@ function Get-DeviceInformation {
 	# Get Logged on users information
 	Get-CheckedInUsersGroupMemberships
 
-    # Get Device Entra ID Group memberships
+    # Get Device AzureADGroup memberships
     $url = "https://graph.microsoft.com/beta/devices?`$filter=deviceid%20eq%20`'$($Script:IntuneManagedDevice.azureADDeviceId)`'"
     $Script:AzureADDevice = Invoke-MSGraphGetRequestWithMSGraphAllPages $url
 
     if($Script:AzureADDevice) {
 
-		# Set info to Entra ID Device JSON view
+		# Set info to Azure AD Device JSON view
 		$WPFAzureADDeviceDetails_json_textBox.Text = $Script:AzureADDevice | ConvertTo-Json -Depth 4
 
 		# DeviceName ToolTip extensionAttributes
@@ -4385,7 +4038,7 @@ function Get-DeviceInformation {
 			# Add extra properties like GroupMembers, GroupType, Security and MembershipType
 			$Script:deviceGroupMemberships = Add-AzureADGroupGroupTypeExtraProperties $Script:deviceGroupMemberships
 			
-			Write-Verbose "Add device's Entra ID groups devices and users member count custom properties"
+			Write-Verbose "Add device's AzureAD groups devices and users member count custom properties"
 			$Script:deviceGroupMemberships = Add-AzureADGroupDevicesAndUserMemberCountExtraProperties $Script:deviceGroupMemberships
 
 			$script:DeviceGroupMembershipsObservableCollection = $Script:deviceGroupMemberships | Sort-Object -Property displayName
@@ -4405,7 +4058,7 @@ function Get-DeviceInformation {
 			$WPFListView_GridTabItem_Device_GroupMembershipsTAB_Menu_Copy_JSON.isEnabled = $True
 			$WPFListView_GridTabItem_Device_GroupMembershipsTAB_Menu_Open_Group_In_Browser.isEnabled = $True
 			
-			# Set ToolTip to TabItem Header showing all Entra ID Groups
+			# Set ToolTip to TabItem Header showing all Azure AD Groups
 			$DeviceGroupsMemberOfToolTip = [array]$null
 			$Script:deviceGroupMemberships | Sort-Object -Property displayName | Foreach { $DeviceGroupsMemberOfToolTip += "$($_.displayName)`n" }
 			
@@ -4492,10 +4145,8 @@ function Get-DeviceInformation {
 		}
 		Write-Host
 
-
 		###########################################################################################
 		# Create Configuration Assignment information
-
 
 		Write-Host
 		Write-Host "Download Intune configuration profiles"
@@ -4696,7 +4347,7 @@ $GraphAPIPostBody = @"
 
 				if(($IntuneDeviceConfigurationPolicyAssignment.target.'@odata.type' -ne '#microsoft.graph.allLicensedUsersAssignmentTarget') -and ($IntuneDeviceConfigurationPolicyAssignment.target.'@odata.type' -ne '#microsoft.graph.allDevicesAssignmentTarget')) {
 
-					# Group based assignment. We need to get Entra ID Group Name
+					# Group based assignment. We need to get AzureAD Group Name
 					# #microsoft.graph.groupAssignmentTarget
 
 					# Test if device is member of this group
@@ -4876,7 +4527,7 @@ $GraphAPIPostBody = @"
 			} else {
 				# We could not determine Assignment source
 				# Either assignments does not exists at all
-				# or assignment is based on nested groups so earlier check did not find Entra ID group where device and/or user is member
+				# or assignment is based on nested groups so earlier check did not find Azure AD group where device and/or user is member
 
 				$context = '_unknown'
 				$PolicyIncludeExclude = ''
@@ -4891,8 +4542,8 @@ $GraphAPIPostBody = @"
 					Write-Host "Warning: Policy $($ConfigurationPolicyReportState.PolicyName) does not have any assignments!" -ForegroundColor Yellow
 					$assignmentGroup = "Policy does not have any assignments!"
 				} else {
-					# There were assignments in Policy but we could not find which Entra ID group is causing policy to be applied
-					Write-Host "Warning: Could not resolve Entra ID Group assignment for Policy $($ConfigurationPolicyReportState.PolicyName)!" -ForegroundColor Yellow
+					# There were assignments in Policy but we could not find which Azure AD group is causing policy to be applied
+					Write-Host "Warning: Could not resolve Azure AD Group assignment for Policy $($ConfigurationPolicyReportState.PolicyName)!" -ForegroundColor Yellow
 					
 					$assignmentGroup = "unknown (possible user targeted group, nested group or removed assignment)"
 				}
@@ -4985,432 +4636,8 @@ $GraphAPIPostBody = @"
 			# Cast as array because otherwise it will fail
 			$WPFlistView_ConfigurationsAssignments.Itemssource = [array]$script:ConfigurationsAssignmentsObservableCollectionUnique
 		}
-		
-
-		
-		
-		###########################################################################################
-		# Get Remediation scripts
-		
-		
-		$script:ScriptsAssignmentsObservableCollection = @()
-
-		Write-Host "Get Remediation scripts for the device"
-		# Get Remediations scripts for device
-		$url = "https://graph.microsoft.com/beta/deviceManagement/managedDevices/$($IntuneDeviceId)/deviceHealthScriptStates?"
-
-		# Send MSGraph request
-		$remediationScriptsForDevice = Invoke-MSGraphGetRequestWithMSGraphAllPages $url
-		if($remediationScriptsForDevice) {
-			Write-Host "Found $($remediationScriptsForDevice.Count) Remediation scripts for device"
-				
-			# Download all Remediation scripts assignments
-			Write-Host "Download all Remediation scripts with assignments information"
-			$RemediationScriptsWithAssignments = Download-RemediationScriptsAssignment
-			Write-Host "Found $($RemediationScriptsWithAssignments.Count) Remediation scripts"
-			
-		} else {
-			Write-Verbose "Did not find any Remediations script"
-			#return $False
-		}
-
-
-		# Loop through all Remediations found for the device
-		Foreach($RemediationScript in $remediationScriptsForDevice) {
-			
-			# Specify status message for Detection scripts
-			switch ($RemediationScript.detectionState) {
-				'success' {
-					$DetectionStatus = 'Without issues'
-					break
-				}
-				'fail' {
-					$DetectionStatus = 'With issues'
-					break
-				}
-				'notApplicable' {
-					$DetectionStatus = 'Not applicable'
-					break
-				}
-				default {
-					#$DetectionStatus = 'Unknown status'
-					$DetectionStatus = $RemediationScript.detectionState
-				}
-			}
-
-
-			# Specify status message for Remediation scripts
-			switch ($RemediationScript.remediationState) {
-				'success' {
-					$RemediationStatus = 'Issue fixed'
-					break
-				}
-				'fail' {
-					$RemediationStatus = 'With issues'
-					break
-				}
-				'skipped' {
-					$RemediationStatus = 'Not run'
-					break
-				}
-				'unknown' {
-					$RemediationStatus = ''
-					break
-				}
-				default {
-					$RemediationStatus = $RemediationScript.remediationState
-					#$RemediationStatus = 'Unknown status'
-				}
-			}
-
-			$DetectionStatusToolTip = $RemediationScript.preRemediationDetectionScriptOutput
-			$RemediationStatusToolTip = $RemediationScript.postRemediationDetectionScriptOutput
-
-			$statusUpdateTime = $null
-			$statusUpdateTimeTooltip = Get-Date $RemediationScript.lastStateUpdateDateTime -Format "yyyy-MM-dd HH:mm:ss.fff"
-
-			
-			$statusUpdateTimeTimespanObject = New-Timespan (Get-Date $RemediationScript.lastStateUpdateDateTime) (Get-Date)
-
-			if($statusUpdateTimeTimespanObject.Days -le 0) {
-				# Days is 0 so status is updated some hour or minutes ago
-				
-				if($statusUpdateTimeTimespanObject.Hours -le 0) {
-					$statusUpdateTime = "$($statusUpdateTimeTimespanObject.Minutes) mins ago"
-				} else {
-					$statusUpdateTime = "$($statusUpdateTimeTimespanObject.Hours) hours ago"
-				}
-			} else {
-				$DaysAgo = $statusUpdateTimeTimespanObject.TotalDays
-				[math]::round($DaysAgo, 1)
-				
-				$statusUpdateTime = "$($statusUpdateTimeTimespanObject.Days) days ago"
-			}
-
-			
-			[array]$IntuneRemediationScriptAssignments = $RemediationScriptsWithAssignments | Where-Object id -eq $RemediationScript.policyId | Select-Object -ExpandProperty assignments
-			
-			
-			# We use this in the end to detect if we need to add Remediation script without assignment information
-			# This could be not assigned but manually triggered Remediation script
-			$assignmentFound=$false
-			
-			# Go trough assignments if found
-			if($IntuneRemediationScriptAssignments) {
-				Foreach($IntuneRemediationScriptAssignment in $IntuneRemediationScriptAssignments) {
-					
-					# Example of Assignment json
-					<#
-					"assignments": [
-							{
-								"id": "dfb2b9a0-2eec-4111-909a-bf5b623f101a:3287d746-f316-4d9a-be58-bbfee5b0aebb",
-								"runRemediationScript": false,
-								"target": {
-									"@odata.type": "#microsoft.graph.groupAssignmentTarget",
-									"deviceAndAppManagementAssignmentFilterId": "00000000-0000-0000-0000-000000000000",
-									"deviceAndAppManagementAssignmentFilterType": "none",
-									"groupId": "3287d746-f316-4d9a-be58-bbfee5b0aebb"
-								},
-								"runSchedule": {
-									"@odata.type": "#microsoft.graph.deviceHealthScriptRunOnceSchedule",
-									"interval": 1,
-									"useUtc": false,
-									"time": "02:00:00.0000000",
-									"date": "2023-03-09"
-								}
-							}
-						]
-					},
-					#>
-
-					$IntuneRemediationScriptAssignmentGroupId = $IntuneRemediationScriptAssignment.target.groupId
-					$IntuneRemediationScriptAssignmentFilterId = $IntuneRemediationScriptAssignment.target.deviceAndAppManagementAssignmentFilterId
-					$IntuneRemediationScriptAssignmentFilterType = $IntuneRemediationScriptAssignment.target.deviceAndAppManagementAssignmentFilterType
-					
-					# Filter mode is: include, exclude or none
-					# Remove none text to make table more readable
-					if($IntuneRemediationScriptAssignmentFilterType -eq 'none') {
-						$IntuneRemediationScriptAssignmentFilterType = ''
-					}
-					
-					$assignmentodataType = $Assignment.target.'@odata.type'
-
-					$assignmentGroup = $null
-					$YodamiittiCustomGroupMembers = 'N/A'
-					$IncludeConfigurationAssignmentInSummary = $false
-
-					$context = '_unknown'
-					
-					if ($IntuneRemediationScriptAssignment.target.'@odata.type' -eq '#microsoft.graph.allLicensedUsersAssignmentTarget') {
-						# Special case for All Users
-						$assignmentGroup = 'All Users'
-						$context = 'User'
-						$AssignmentGroupToolTip = 'Built-in All Users group'
-
-						$YodamiittiCustomGroupMembers = ''
-
-						$IncludeConfigurationAssignmentInSummary = $true
-						$assignmentFound = $true
-					}
-
-					if ($IntuneRemediationScriptAssignment.target.'@odata.type' -eq '#microsoft.graph.allDevicesAssignmentTarget') {
-						# Special case for All Devices
-						$assignmentGroup = 'All Devices'
-						$context = 'Device'
-						$AssignmentGroupToolTip = 'Built-in All Devices group'
-
-						$YodamiittiCustomGroupMembers = ''
-
-						$IncludeConfigurationAssignmentInSummary = $true
-						$assignmentFound = $true
-					}
-
-
-					if($IntuneRemediationScriptAssignment.target.'@odata.type' -eq '#microsoft.graph.groupAssignmentTarget') {
-						# Assignment is Entra ID group type
-
-						# Test if device is member of this group
-						$assignmentGroupObject = $Script:deviceGroupMemberships | Where-Object { $_.id -eq $IntuneRemediationScriptAssignment.target.groupId}
-						if($assignmentGroupObject) {
-							
-							$assignmentGroup = $assignmentGroupObject.displayName
-							$assignmentGroupId = $assignmentGroupObject.id
-
-							# Create Group Members column information
-							$DevicesCount = $assignmentGroupObject.YodamiittiCustomGroupMembersCountDevices
-							$UsersCount = $assignmentGroupObject.YodamiittiCustomGroupMembersCountUsers
-							#$YodamiittiCustomGroupMembers = "$DevicesCount devices, $UsersCount users"
-							$YodamiittiCustomGroupMembers = ''
-							if($DevicesCount -gt 0) { $YodamiittiCustomGroupMembers += "$DevicesCount devices " }
-							if($UsersCount -gt 0) { $YodamiittiCustomGroupMembers += "$UsersCount users " }							
-
-							$AssignmentGroupToolTip = "$($assignmentGroupObject.membershipRule)"
-							
-							$YodamiittiCustomMembershipType = $assignmentGroupObject.YodamiittiCustomMembershipType
-							
-							#Write-Host "device group found: $($assignmentGroup.displayName)"
-							$context = 'Device'
-
-							$IncludeConfigurationAssignmentInSummary = $true
-							$assignmentFound = $true
-						} else {
-							# Group not found on member of devicegroups
-						}
-					}
-
-					# Test if primary user is member of assignment group
-					if($Script:PrimaryUserGroupsMemberOf | Where-Object { $_.id -eq $IntuneRemediationScriptAssignment.target.groupId}) {
-						if($assignmentGroup) {
-							# Device also is member of this group. Now we got mixed User and Device memberships
-							# Maybe not good practise but it is possible
-
-							# We will actually skip getting possible user Group for this assignment
-							# Future improvement is to add user Group information also
-
-							$context = '_Device/User'
-						} else {
-							# No assignment group was found earlier
-							$context = 'User'
-						
-							$assignmentGroupObject = $Script:PrimaryUserGroupsMemberOf | Where-Object { $_.id -eq $IntuneRemediationScriptAssignment.target.groupId}
-							
-							$assignmentGroup = $assignmentGroupObject.displayName
-							$assignmentGroupId = $assignmentGroupObject.id
-							
-							# Create Group Members column information
-							$DevicesCount = $assignmentGroupObject.YodamiittiCustomGroupMembersCountDevices
-							$UsersCount = $assignmentGroupObject.YodamiittiCustomGroupMembersCountUsers
-							#$YodamiittiCustomGroupMembers = "$DevicesCount devices, $UsersCount users"
-							$YodamiittiCustomGroupMembers = ''
-							if($DevicesCount -gt 0) { $YodamiittiCustomGroupMembers += "$DevicesCount devices " }
-							if($UsersCount -gt 0) { $YodamiittiCustomGroupMembers += "$UsersCount users " }
-							
-							$AssignmentGroupToolTip = "$($assignmentGroupObject.membershipRule)"
-							
-							$YodamiittiCustomMembershipType = $assignmentGroupObject.YodamiittiCustomMembershipType
-							
-							#Write-Host "User group found: $($assignmentGroup.displayName)"
-						}							
-						$IncludeConfigurationAssignmentInSummary = $true
-						$assignmentFound = $true
-					} else {
-						# Group not found on member of devicegroups
-					}
-
-
-					# Test if Latest LoggedIn User is member of assignment group
-					# Only test this if PrimaryUser and Latest LoggedIn User is different user
-					if($Script:PrimaryUser.id -ne $Script:LatestCheckedinUser.id) {
-						if($Script:LatestCheckedInUserGroupsMemberOf | Where-Object { $_.id -eq $IntuneRemediationScriptAssignment.target.groupId}) {
-							if($assignmentGroup) {
-								# Device or PrimaryUser also is member of this group.
-								# Now we may got mixed User and Device memberships
-								# Maybe not good practise but it is possible
-
-								if($context -eq 'Device') {
-									$context = '_Device/User'
-								}
-							} else {
-								
-								$context = 'User'
-
-								$assignmentGroupObject = $Script:LatestCheckedInUserGroupsMemberOf | Where-Object { $_.id -eq $IntuneRemediationScriptAssignment.target.groupId}
-								
-								$assignmentGroup = $assignmentGroupObject.displayName
-								$assignmentGroupId = $assignmentGroupObject.id
-								
-								# Create Group Members column information
-								$DevicesCount = $assignmentGroupObject.YodamiittiCustomGroupMembersCountDevices
-								$UsersCount = $assignmentGroupObject.YodamiittiCustomGroupMembersCountUsers
-								$YodamiittiCustomGroupMembers = "$DevicesCount devices, $UsersCount users"
-								
-								$AssignmentGroupToolTip = "$($assignmentGroupObject.membershipRule)"
-								
-								$YodamiittiCustomMembershipType = $assignmentGroupObject.YodamiittiCustomMembershipType
-								
-								#Write-Host "User group found: $($assignmentGroup.displayName)"
-
-								$IncludeConfigurationAssignmentInSummary = $true
-								$assignmentFound = $true
-							}
-						} else {
-							# Group not found on member of devicegroups
-						}
-					}
-
-					if($IncludeConfigurationAssignmentInSummary) {
-						# We have at least 1 assignment group
-
-						#######################
-						# Get Remediation script Assignment Filter information
-						
-						$assignmentFilterObject = $AllIntuneFilters | Where-Object { $_.id -eq $IntuneRemediationScriptAssignmentFilterId }
-						$assignmentFilterDisplayName = $assignmentFilterObject.displayName
-						$FilterToolTip = $assignmentFilterObject.rule
-
-						# Add schedule info to AssignmentGroupToolTip
-						$ScheduleType = $IntuneRemediationScriptAssignment.runSchedule.'@odata.type'
-						$ScheduleInterval = $IntuneRemediationScriptAssignment.runSchedule.interval
-						$ScheduleTime = $IntuneRemediationScriptAssignment.runSchedule.time
-
-						# Set Assignment Schedule information to AssignmentGroupToolTip
-						if($ScheduleType -eq '#microsoft.graph.deviceHealthScriptRunOnceSchedule') {
-							# Run once
-							$ScheduleDate = $IntuneRemediationScriptAssignment.runSchedule.date
-							$AssignmentGroupToolTip += "`n`nRemediation schedule:`nRun once`n$ScheduleTime`n$ScheduleDate"
-
-						} elseif ($ScheduleType -eq '#microsoft.graph.deviceHealthScriptHourlySchedule') {
-							# Run hourly
-							$AssignmentGroupToolTip += "`n`nRemediation schedule:`nRun every $ScheduleInterval hours"
-
-						} elseif ($ScheduleType -eq '#microsoft.graph.deviceHealthScriptDailySchedule') {
-							# Run daily
-							$AssignmentGroupToolTip += "`n`nRemediation schedule:`nRun every $ScheduleInterval days"
-
-						} else {
-							# Did not recognize schedule type
-							$AssignmentGroupToolTip += "`n`nRemediation schedule:`n$ScheduleType`n$ScheduleInterval`n$ScheduleTime"
-						}
-
-						
-						# Cast variable types to make sure column click based sorting works
-						# Sorting may break if there are different kind of objects
-						$properties = @{
-							context                          = [String]$context
-							scriptType                       = [String]'Remediation'
-							DetectionStatus					 = [String]$DetectionStatus
-							DetectionStatusToolTip			 = [String]$DetectionStatusToolTip
-							RemediationStatus			     = [String]$RemediationStatus
-							RemediationStatusToolTip		 = [String]$RemediationStatusToolTip
-							userPrincipalName                = [String]$RemediationScript.userName
-							displayname                      = [String]$RemediationScript.PolicyName
-							statusUpdateTime			     = [String]$statusUpdateTime
-							statusUpdateTimeTooltip		     = [String]$statusUpdateTimeTooltip
-							assignmentGroup                  = [String]$assignmentGroup
-							YodamiittiCustomGroupMembers     = [String]$YodamiittiCustomGroupMembers
-							assignmentGroupId 				 = [String]$assignmentGroupId
-							state                            = [String]$RemediationScript.detectionState
-							YodamiittiCustomMembershipType   = [String]$YodamiittiCustomMembershipType
-							id                               = [String]$RemediationScript.PolicyId
-							filter							 = [String]$assignmentFilterDisplayName
-							filterId						 = [String]$assignmentFilterId
-							filterMode						 = [String]$IntuneRemediationScriptAssignmentFilterType
-							filterTooltip                    = [String]$FilterTooltip
-							AssignmentGroupToolTip 			 = [String]$AssignmentGroupToolTip
-							displayNameToolTip               = [String]$displayNameToolTip
-						}
-
-						# Create new custom object every time inside foreach-loop
-						# If you create custom object outside of foreach then you would edit same custom object on every foreach cycle resulting only 1 app in custom object array
-						$CustomObject = New-Object -TypeName PSObject -Prop $properties
-
-						# Add custom object to our custom object array.
-						$script:ScriptsAssignmentsObservableCollection += $CustomObject
-						
-					}
-
-				} # endregion Foreach Assignment -loop
-				
-			} else {
-				Write-Verbose "No remediation script assignments"
-				
-				if(-not $assignmentFound) {
-					# Could not find assignment so we need to add Remediation script without assignment information
-					# This Remediation may have been triggered to run manually on this device from Intune UI
-					
-					# Cast variable types to make sure column click based sorting works
-					# Sorting may break if there are different kind of objects
-					$properties = @{
-						context                          = ''
-						scriptType                       = [String]'Remediation'
-						DetectionStatus					 = [String]$DetectionStatus
-						DetectionStatusToolTip			 = [String]$DetectionStatusToolTip
-						RemediationStatus			     = [String]$RemediationStatus
-						RemediationStatusToolTip		 = [String]$RemediationStatusToolTip
-						userPrincipalName                = [String]$RemediationScript.userName
-						displayname                      = [String]$RemediationScript.PolicyName
-						statusUpdateTime			     = $statusUpdateTime
-						statusUpdateTimeTooltip		     = [String]$statusUpdateTimeTooltip
-						assignmentGroup                  = $null
-						YodamiittiCustomGroupMembers     = $null
-						assignmentGroupId 				 = $null
-						state                            = $null
-						YodamiittiCustomMembershipType   = $null
-						id                               = $RemediationScript.PolicyId
-						filter							 = $null
-						filterId						 = $null
-						filterMode						 = $null
-						filterTooltip                    = $null
-						AssignmentGroupToolTip 			 = $null
-						displayNameToolTip               = [String]$displayNameToolTip
-					}
-
-					# Create new custom object every time inside foreach-loop
-					# If you create custom object outside of foreach then you would edit same custom object on every foreach cycle resulting only 1 app in custom object array
-					$CustomObject = New-Object -TypeName PSObject -Prop $properties
-
-					# Add custom object to our custom object array.
-					$script:ScriptsAssignmentsObservableCollection += $CustomObject
-				}
-			}
-			
-		} # endregion Foreach-looping all remediation scripts for the device
-
-
-		# Set .itemsSource to show information in ListView
-		if($script:ScriptsAssignmentsObservableCollection.Count -gt 1) {
-			# ItemsSource works if we are sorting 2 or more objects
-			$WPFlistView_ScriptsAssignments.Itemssource = $script:ScriptsAssignmentsObservableCollection | Sort-Object displayName,userName
-		} else {
-			# Only 1 object so we can't do sorting
-			# If we try to sort here then our object array breaks and it does not work for ItemsSource
-			# Cast as array because otherwise it will fail
-			$WPFlistView_ScriptsAssignments.Itemssource = [array]$script:ScriptsAssignmentsObservableCollection
-		}
-
-		
 	} else {
-		Write-Host "Skipped Applications, Configurations and Scripts Assignment report"
+		Write-Host "Skipped Applications and Configurations Assignment report"
 	}
 
 	
@@ -5512,7 +4739,6 @@ Function Clear-UIData {
 	$WPFlistView_LatestCheckedInUser_GroupMemberships.Itemssource = $null
 	$WPFlistView_ApplicationAssignments.Itemssource = $null
 	$WPFlistView_ConfigurationsAssignments.Itemssource = $null
-	$WPFlistView_ScriptsAssignments.Itemssource = $null
 	
 	# Empty script wide variables
 	$Script:IntuneManagedDevice = $null
@@ -6058,7 +5284,7 @@ $WPFAutopilotProfile_textBox_Menu_OpenAutopilotDeploymentProfileInBrowser.Add_Cl
 
 
 
-### Device Entra ID GroupMemberships
+### Device Azure AD GroupMemberships
 $WPFListView_GridTabItem_Device_GroupMembershipsTAB_Menu_Copy_DynamicRules.Add_Click( {
 
 		# Cast as array so we can add multiple objects. Otherwise += will not work
@@ -6584,13 +5810,13 @@ $WPFlistView_Device_GroupMemberships.Add_SelectionChanged( {
 		$SelectedAzureADGroup = $WPFlistView_Device_GroupMemberships.SelectedItems
 		$NumberOfAzureADGroupsSelected = $SelectedAzureADGroup.Count
 
-		#Write-Verbose "Selected EntraIDGroup $($SelectedAzureADGroup)"
-		#Write-Verbose "Selected EntraIDGroup count is $NumberOfAzureADGroupsSelected"
+		#Write-Verbose "Selected AzureADGroup $($SelectedAzureADGroup)"
+		#Write-Verbose "Selected AzureADGroup count is $NumberOfAzureADGroupsSelected"
 		
 		# Continue only if 1 configuration is selected
 		if($NumberOfAzureADGroupsSelected -eq 1) {
 
-			# Set Selected Entra ID Group JSON view text
+			# Set Selected Azure AD Group JSON view text
 			$WPFAzureAD_Group_json_textBox.Text = $SelectedAzureADGroup | Select-Object -Property * -ExcludeProperty YodamiittiCustom* | ConvertTo-Json -Depth 6
 		}
 	})
@@ -6599,13 +5825,13 @@ $WPFlistView_PrimaryUser_GroupMemberships.Add_SelectionChanged( {
 		$SelectedAzureADGroup = $WPFlistView_PrimaryUser_GroupMemberships.SelectedItems
 		$NumberOfAzureADGroupsSelected = $SelectedAzureADGroup.Count
 
-		#Write-Verbose "Selected EntraIDGroup $($SelectedAzureADGroup)"
-		#Write-Verbose "Selected EntraIDGroup count is $NumberOfAzureADGroupsSelected"
+		#Write-Verbose "Selected AzureADGroup $($SelectedAzureADGroup)"
+		#Write-Verbose "Selected AzureADGroup count is $NumberOfAzureADGroupsSelected"
 		
 		# Continue only if 1 configuration is selected
 		if($NumberOfAzureADGroupsSelected -eq 1) {
 
-			# Set Selected Entra ID Group JSON view text
+			# Set Selected Azure AD Group JSON view text
 			$WPFAzureAD_Group_json_textBox.Text = $SelectedAzureADGroup | Select-Object -Property * -ExcludeProperty YodamiittiCustom* | ConvertTo-Json -Depth 6
 		}
 	})
@@ -6614,13 +5840,13 @@ $WPFlistView_LatestCheckedInUser_GroupMemberships.Add_SelectionChanged( {
 		$SelectedAzureADGroup = $WPFlistView_LatestCheckedInUser_GroupMemberships.SelectedItems
 		$NumberOfAzureADGroupsSelected = $SelectedAzureADGroup.Count
 
-		#Write-Verbose "Selected EntraIDGroup $($SelectedAzureADGroup)"
-		#Write-Verbose "Selected EntraIDGroup count is $NumberOfAzureADGroupsSelected"
+		#Write-Verbose "Selected AzureADGroup $($SelectedAzureADGroup)"
+		#Write-Verbose "Selected AzureADGroup count is $NumberOfAzureADGroupsSelected"
 		
 		# Continue only if 1 configuration is selected
 		if($NumberOfAzureADGroupsSelected -eq 1) {
 
-			# Set Selected Entra ID Group JSON view text
+			# Set Selected Azure AD Group JSON view text
 			$WPFAzureAD_Group_json_textBox.Text = $SelectedAzureADGroup | Select-Object -Property * -ExcludeProperty YodamiittiCustom* | ConvertTo-Json -Depth 6
 		}
 	})
@@ -6916,7 +6142,7 @@ $Form.TaskbarItemInfo.Overlay = DecodeBase64Image -ImageBase64 $Icon
 $Form.TaskbarItemInfo.Description = $Form.Title
 
 # Set Reload cache Tooltip
-$WPFcheckBox_ReloadCache.ToolTip = "Checking this will update Apps and Policies cache files.`n`nApplication and Configurations cache files are automatically reloaded every $Script:ReloadCacheEveryNDays days.`nApps and policies are also reloaded every time there has been change.`nSometimes Intune may not update lastModifiedDateTime property so data might not be up-to-date.`n`nUnknown assignment in report might be caused by removed assignment, nested Entra ID Groups or old data.`n`nUnknown assignments may also go away when devices sync with Intune and when Intune creates new monitoring report data."
+$WPFcheckBox_ReloadCache.ToolTip = "Checking this will update Apps and Policies cache files.`n`nApplication and Configurations cache files are automatically reloaded every $Script:ReloadCacheEveryNDays days.`nApps and policies are also reloaded every time there has been change.`nSometimes Intune may not update lastModifiedDateTime property so data might not be up-to-date.`n`nUnknown assignment in report might be caused by removed assignment, nested Azure AD Groups or old data.`n`nUnknown assignments may also go away when devices sync with Intune and when Intune creates new monitoring report data."
 
 # Set checkBox_SkipAppAndConfigurationAssignmentReport ToolTip
 $WPFcheckBox_SkipAppAndConfigurationAssignmentReport.ToolTip = "Quicker search to get Basic info only.`n`nThis gets Intune Device and Primary User information only and skips Applications and Configurations Assignment report.`n`nCan be used to quickly check device and PrimaryUser information only."
